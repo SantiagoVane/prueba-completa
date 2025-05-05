@@ -10,8 +10,10 @@ gestión de productos y órdenes, construido con stack MERN + Tailwind CSS.
 
 ## Estructura del proyecto
 
-backend/ # API REST con Node.js, Express, TypeScript y MongoDB
-frontend/ # Interfaz en React, TypeScript y Tailwind CSS
+backend/ 
+# API REST con Node.js, Express, TypeScript y MongoDB
+frontend/ 
+# Interfaz en React, TypeScript y Tailwind CSS
 .gitignore
 README.md
 
@@ -41,7 +43,7 @@ README.md
 
 ### 1. Clonar el repositorio
 
-bash
+
 git clone https://github.com/SantiagoVane/prueba-completa.git
 cd prueba-completa
 

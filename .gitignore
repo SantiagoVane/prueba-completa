@@ -5,8 +5,8 @@ dist/
 build/
 
 # Frontend
-frontend/dist/
-frontend/.env
+frontend-prueba-tecnica/dist/
+frontend-prueba-tecnica/.env
 
 # Backend
 backend/node_modules/
