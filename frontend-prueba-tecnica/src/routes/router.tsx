@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/login';
 import AdminDashboard from '../pages/adminDashboard';
 import ClientDashboard from '../pages/clientDashboard';
@@ -18,7 +18,6 @@ const PrivateRoute = ({ children, role }: { children: ReactNode; role: 'admin' |
 
 const Router = () => {
     return (
-        <BrowserRouter>
             <Routes>
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
@@ -43,7 +42,6 @@ const Router = () => {
 
                 <Route path="*" element={<Navigate to="/login" />} />
             </Routes>
-        </BrowserRouter>
     );
 };
 

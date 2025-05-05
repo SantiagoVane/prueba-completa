@@ -1,92 +1,105 @@
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+interface Product {
+    _id: string;
+    name: string;
+    description: string;
+    createdBy: string;
+}
 
 const AdminDashboard = () => {
-    const { logout, token } = useAuth();
-    const navigate = useNavigate();
+    const { token } = useAuth();
+    const [products, setProducts] = useState<Product[]>([]);
+    const [form, setForm] = useState({ name: '', description: '' });
 
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [message, setMessage] = useState('');
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
+    const fetchProducts = async () => {
+        const res = await fetch('http://localhost:3000/products');
+        const data = await res.json();
+        setProducts(data);
     };
 
-    const handleCreateProduct = async (e: React.FormEvent) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
-        setMessage('');
-
-        try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/products`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ title, description })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                return setMessage(data.message || 'Error al crear el producto');
-            }
-
-            setMessage('✅ Producto creado exitosamente');
-            setTitle('');
-            setDescription('');
-        } catch (err) {
-            setMessage('❌ Error en la solicitud');
+        const res = await fetch('http://localhost:3000/products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(form)
+        });
+        if (res.ok) {
+            setForm({ name: '', description: '' });
+            fetchProducts(); // actualizar lista
+        } else {
+            alert('Error al crear producto');
         }
     };
 
+    const handleDelete = async (id: string) => {
+        const res = await fetch(`http://localhost:3000/products/${id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (res.ok) {
+            fetchProducts();
+        } else {
+            alert('Error al eliminar producto');
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
     return (
-        <div className="p-8 max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Panel de Administración</h1>
+        <div className="p-6 max-w-2xl mx-auto">
+            <h1 className="text-2xl font-bold mb-4">Dashboard Administrador</h1>
 
-            <form onSubmit={handleCreateProduct} className="space-y-4">
-                <div>
-                    <label className="block font-medium">Título</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={e => setTitle(e.target.value)}
-                        className="w-full border px-3 py-2 rounded"
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label className="block font-medium">Descripción</label>
-                    <textarea
-                        value={description}
-                        onChange={e => setDescription(e.target.value)}
-                        className="w-full border px-3 py-2 rounded"
-                        required
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
+            <form onSubmit={handleCreate} className="mb-6 space-y-2">
+                <input
+                    name="name"
+                    placeholder="Nombre del producto"
+                    value={form.name}
+                    onChange={handleChange}
+                    className="w-full border p-2 rounded"
+                    required
+                />
+                <input
+                    name="description"
+                    placeholder="Descripción"
+                    value={form.description}
+                    onChange={handleChange}
+                    className="w-full border p-2 rounded"
+                    required
+                />
+                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
                     Crear Producto
                 </button>
             </form>
 
-            {message && <p className="mt-4 text-center text-sm">{message}</p>}
-
-            <hr className="my-6" />
-
-            <button
-                onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-                Cerrar sesión
-            </button>
+            <ul className="space-y-4">
+                {products.map((product) => (
+                    <li key={product._id} className="border p-4 rounded shadow">
+                        <h3 className="font-semibold">{product._id}</h3>
+                        <p>{product.description}</p>
+                        <button
+                            onClick={() => handleDelete(product._id)}
+                            className="mt-2 bg-red-500 text-white px-2 py-1 rounded"
+                        >
+                            Eliminar
+                        </button>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };
