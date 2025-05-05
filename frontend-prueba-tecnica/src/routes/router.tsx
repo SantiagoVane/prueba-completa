@@ -4,6 +4,8 @@ import AdminDashboard from '../pages/adminDashboard';
 import ClientDashboard from '../pages/clientDashboard';
 import { useAuth } from '../context/AuthContext';
 import { ReactNode } from 'react';
+import Register from '../pages/register';
+
 
 const PrivateRoute = ({ children, role }: { children: ReactNode; role: 'admin' | 'client' }) => {
     const { user } = useAuth();
@@ -18,6 +20,7 @@ const Router = () => {
     return (
         <BrowserRouter>
             <Routes>
+                <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
 
                 <Route
